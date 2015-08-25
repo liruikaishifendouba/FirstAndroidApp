@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">FirstAndroidApp</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_other">otheractivty</string>
+    <string name="other">ja you </string>
+    <string name="calculate">计算 </string>
+
+    <string name="symbol">乘 </string>
+    <string name="about">关于</string>
+    <string name="exit">退出</string>
+    <string name="hello_world">Hello Android!</string>
+    <string name="action_settings">Settings</string>
+</resources>

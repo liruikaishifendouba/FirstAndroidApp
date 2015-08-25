@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    tools:context="org.lirui.firstandroidapp.MainActivity">
+    <TextView
+        android:id="@+id/myTestView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:textSize="25sp"
+        android:singleLine="true"
+        android:paddingLeft="20dp"
+        android:layout_marginLeft="10dp"
+        android:textColor="#fff"
+        android:text="hahahahhahahahahhahahahahahhahahahah">
+
+    </TextView>
+
+
+
+</LinearLayout>
