@@ -103,7 +103,7 @@
         <receiver android:name=".TestReceiver">
 
         </receiver>
-        <receiver android:name=".TodoReceiver">
+       <!-- <receiver android:name=".TodoReceiver">
             <intent-filter>
             <action android:name="org.lirui.firstandroidapp.TodoReceiver"/>
             </intent-filter>
@@ -112,7 +112,7 @@
             <intent-filter>
                 <action android:name="org.lirui.firstandroidapp.TodoServiceReceiver"/>
             </intent-filter>
-        </receiver>
+        </receiver>-->
         <activity android:name="SecondActivity"/>
 
 

@@ -37,33 +37,41 @@ public class Todo extends Activity {
     private SimpleDateFormat mytime;
     private MyAdapter adapter;
     private MyHandler handler;
-    private  ArrayList<Schedule> datas;
-    private BroadcastReceiver myReceiver;
-    private Notification notification ;
+    private ArrayList<Schedule> datas;
+    private MyReceiver myReceiver;
+    private Notification notification;
     // 声明NotificationManager
     private NotificationManager mNotification;
     // Notification标示ID
     private static final int ID = 1;
-    private static final String TODO_ACTION = "org.lirui.firstandroidapp.TODO_ACTION";
-    public static final String TodoService_ACTION = "org.lirui.firstandroidapp.TodoService";
+    public static final String TODO_ACTION = "org.lirui.firstandroidapp.TODO_ACTION";
+    public static final String TodoService_ACTION = "org.lirui.firstandroidapp.TodoReceiver";
     TodoDatabase db = new TodoDatabase(Todo.this);
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.todo);
         bindService(new Intent(TodoService.ACTTION), conn, BIND_AUTO_CREATE);
         init();
-        Intent result = getIntent();
-        String key = result.getStringExtra("key");
-        if(key!=null){
-            runNotification();
-        }
-        myReceiver = new BroadcastReceiver();
+//        Intent result = getIntent();
+//        String key = result.getStringExtra("key");
+//        if (key != null) {
+//            runNotification();
+//        }
+        myReceiver = new MyReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(TODO_ACTION);
         registerReceiver(myReceiver, filter);
     }
-    private void init(){
+    class MyReceiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            runNotification();
+        }
+    }
+
+    private void init() {
         add = (Button) findViewById(R.id.add);
         lv = (ListView) findViewById(R.id.lv);
         add.setOnClickListener(new AddListener());
@@ -73,80 +81,87 @@ public class Todo extends Activity {
         getTodoList();
 
     }
+
     ServiceConnection conn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             System.out.println("onServiceConnected");
         }
+
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            System.out.println( "onServiceDisconnected");
+            System.out.println("onServiceDisconnected");
         }
     };
-    @Override
-    public  void onDestroy(){
-        System.out.println("------执行了---------onDestroy");
 
+    @Override
+    public void onDestroy() {
+        if(myReceiver!=null) {
+            unregisterReceiver(myReceiver);
+        }
         unbindService(conn);
         super.onDestroy();
     }
-    public void sendBroadcast()
-    {
-        Intent intent = new Intent();
-        intent.setAction(TodoService_ACTION);
-        sendBroadcast(intent);}
+
+//    public void sendBroadcast() {
+//        Intent intent = new Intent();
+//        intent.setAction(TODO_ACTION);
+//        sendBroadcast(intent);
+//    }
+
     public void runNotification() {
-            mNotification = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        mNotification = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-            notification = new Notification();
-            int icon = notification.icon = android.R.drawable.stat_notify_chat;
-            String tickerText = "Test Notification";
-            long when = System.currentTimeMillis();
-            notification.icon = icon;
-            notification.tickerText = tickerText;
-            notification.when = when;
+        notification = new Notification();
+        int icon = notification.icon = android.R.drawable.stat_notify_chat;
+        String tickerText = "Test Notification";
+        long when = System.currentTimeMillis();
+        notification.icon = icon;
+        notification.tickerText = tickerText;
+        notification.when = when;
 
-            // 实例化Intent
+        // 实例化Intent
         Intent intent = new Intent();
         intent.setAction(TodoService_ACTION);
-        sendBroadcast(intent);
-            // 获得PendingIntent
-            PendingIntent pi = PendingIntent.getBroadcast(this, 0, intent, 0);
-            // 设置事件信息
-            notification.setLatestEventInfo(this, "消息", "点击停止", pi);
-            // 发出通知
-            mNotification.notify(ID, notification);
+
+        // 获得PendingIntent
+        PendingIntent pi = PendingIntent.getBroadcast(this, 0, intent, 0);
+        // 设置事件信息
+        notification.setLatestEventInfo(this, "消息", "点击停止", pi);
+        // 发出通知
+        mNotification.notify(ID, notification);
     }
 
-    public class TodoServiceReceiver extends BroadcastReceiver {
+//    public class TodoServiceReceiver extends BroadcastReceiver {
+//
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            mNotification = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//
+//            notification = new Notification();
+//            int icon = notification.icon = android.R.drawable.stat_notify_chat;
+//            String tickerText = "Test Notification";
+//            long when = System.currentTimeMillis();
+//            notification.icon = icon;
+//            notification.tickerText = tickerText;
+//            notification.when = when;
+//
+//            // 实例化Intent
+//            Intent i = new Intent();
+//            intent.setAction(TODO_ACTION);
+//            sendBroadcast(i);
+//            // 获得PendingIntent
+//            PendingIntent pi = PendingIntent.getBroadcast(Todo.this, 0, intent, 0);
+//            // 设置事件信息
+//            notification.setLatestEventInfo(Todo.this, "消息", "点击停止", pi);
+//            // 发出通知
+//            mNotification.notify(ID, notification);
+//
+//        }
+//
+//
+//    }
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            mNotification = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-
-            notification = new Notification();
-            int icon = notification.icon = android.R.drawable.stat_notify_chat;
-            String tickerText = "Test Notification";
-            long when = System.currentTimeMillis();
-            notification.icon = icon;
-            notification.tickerText = tickerText;
-            notification.when = when;
-
-            // 实例化Intent
-            Intent i = new Intent();
-            intent.setAction(TodoService_ACTION);
-            sendBroadcast(i);
-            // 获得PendingIntent
-            PendingIntent pi = PendingIntent.getBroadcast(Todo.this, 0, intent, 0);
-            // 设置事件信息
-            notification.setLatestEventInfo(Todo.this, "消息", "点击停止", pi);
-            // 发出通知
-            mNotification.notify(ID, notification);
-
-        }
-
-
-    }
     class AddListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -177,10 +192,10 @@ public class Todo extends Activity {
             }
         }.start();
     }
-    class ListViewListener implements AdapterView.OnItemClickListener
-    {
+
+    class ListViewListener implements AdapterView.OnItemClickListener {
         @Override
-        public void onItemClick (AdapterView < ? > parent, View view,int position, long id){
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Intent intent = new Intent();
             intent.putExtra("content", datas.get(position).content);
             intent.putExtra("time", datas.get(position).time);
@@ -190,9 +205,9 @@ public class Todo extends Activity {
             startActivityForResult(intent, 2);
         }
     }
-    private void dialog(final int position)
-    {
-        AlertDialog.Builder builder=new AlertDialog.Builder(Todo.this);
+
+    private void dialog(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Todo.this);
         builder.setTitle("提示");
         builder.setMessage("是否确认删除?");
         builder.setIcon(R.mipmap.ic_launcher);
@@ -208,7 +223,7 @@ public class Todo extends Activity {
                 msg.what = DELETE;
 //                        msg.arg1 = position;
                 handler.sendMessage(msg);
-                System.out.println("----------打印position-------------------"+position+"-------------");
+                System.out.println("----------打印position-------------------" + position + "-------------");
 
                 //Toast.makeText(Todo.this, "确认" , Toast.LENGTH_SHORT).show();
 
@@ -227,9 +242,10 @@ public class Todo extends Activity {
 
         builder.create().show();
     }
+
     class delete implements AdapterView.OnItemLongClickListener {
         @Override
-        public boolean onItemLongClick(AdapterView < ? > parent, View view, final int position, long id) {
+        public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
             dialog(position);
 
             return true;
@@ -284,10 +300,6 @@ public class Todo extends Activity {
     }
 
 
-
-
-
-
     public class MyAdapter extends BaseAdapter {
         private ArrayList<Schedule> dataList = new ArrayList<Schedule>();
         private Holder holder;
@@ -296,10 +308,12 @@ public class Todo extends Activity {
         private MyAdapter(Context context) {
             inflater = LayoutInflater.from(context);
         }
+
         public void setData(ArrayList<Schedule> dataList) {
             this.dataList.clear();
             this.dataList.addAll(dataList);
         }
+
         @Override
         public int getCount() {
             return dataList.size();
@@ -330,7 +344,7 @@ public class Todo extends Activity {
             }
             mytime = new SimpleDateFormat("MM/dd HH:mm");
 
-            final Schedule schedule  = dataList.get(position);
+            final Schedule schedule = dataList.get(position);
             holder.content.setText(schedule.content);
             holder.time.setText(mytime.format((schedule.time)));
 
@@ -351,7 +365,7 @@ public class Todo extends Activity {
                         @Override
                         public void run() {
                             if (schedule.is_done == 1) {
-                                schedule.is_done =0;
+                                schedule.is_done = 0;
                                 TodoDatabase db = new TodoDatabase(Todo.this);
                                 db.insertOrUpdate(schedule);
                                 if (db.insertOrUpdate(schedule) == 1) {
@@ -363,8 +377,8 @@ public class Todo extends Activity {
                                     schedule.is_done = 1;
                                     //System.out.println("------更新失败，ischecked是" + "---------true------");
                                 }
-                            }else {
-                                schedule.is_done =1;
+                            } else {
+                                schedule.is_done = 1;
                                 TodoDatabase db = new TodoDatabase(Todo.this);
                                 db.insertOrUpdate(schedule);
                                 if (db.insertOrUpdate(schedule) == 1) {
@@ -378,9 +392,9 @@ public class Todo extends Activity {
                                 }
                             }
                         }
-                        }.start();
+                    }.start();
 
-                    }
+                }
 
             });
 
@@ -390,43 +404,43 @@ public class Todo extends Activity {
 
     }
 
-         @Override
-         protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-             super.onActivityResult(requestCode, resultCode, data);
-             switch (requestCode) {
-                 case 1:
-                     if (resultCode == RESULT_OK) {
-                         new Thread() {
-                             @Override
-                             public void run() {
-                                 TodoDatabase db = new TodoDatabase(Todo.this);
-                                 datas = db.getScheduleList();
-                                 Message msg = handler.obtainMessage();
-                                 msg.what = MSG_LOAD_SUCCESS;
-                                 msg.obj = datas;
-                                 handler.sendMessage(msg);
-                             }
-                         }.start();
-                     }
-                     break;
-                 case 2:
-                     if (resultCode == RESULT_OK) {
-                         new Thread() {
-                             @Override
-                             public void run() {
-                                 TodoDatabase db = new TodoDatabase(Todo.this);
-                                 datas = db.getScheduleList();
-                                 Message msg = handler.obtainMessage();
-                                 msg.what = MSG_LOAD_SUCCESS;
-                                 msg.obj = datas;
-                                 handler.sendMessage(msg);
-                             }
-                         }.start();
-                     }
-                     break;
-             }
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case 1:
+                if (resultCode == RESULT_OK) {
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            TodoDatabase db = new TodoDatabase(Todo.this);
+                            datas = db.getScheduleList();
+                            Message msg = handler.obtainMessage();
+                            msg.what = MSG_LOAD_SUCCESS;
+                            msg.obj = datas;
+                            handler.sendMessage(msg);
+                        }
+                    }.start();
+                }
+                break;
+            case 2:
+                if (resultCode == RESULT_OK) {
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            TodoDatabase db = new TodoDatabase(Todo.this);
+                            datas = db.getScheduleList();
+                            Message msg = handler.obtainMessage();
+                            msg.what = MSG_LOAD_SUCCESS;
+                            msg.obj = datas;
+                            handler.sendMessage(msg);
+                        }
+                    }.start();
+                }
+                break;
+        }
 
-         }
+    }
 
 }
