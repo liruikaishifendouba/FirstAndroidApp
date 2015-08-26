@@ -1,5 +1,8 @@
 package org.lirui.firstandroidapp;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -14,6 +17,7 @@ import static android.content.Intent.getIntent;
 public class TodoService extends Service {
 
     public static final String ACTTION = "org.lirui.firstandroidapp.TodoService";
+    public static final String AlarmReceiver = "org.lirui.firstandroidapp.AlarmReceiver";
 
     public MyServiceReceiver myServiceReceiver;
     private Intent intent;
@@ -28,6 +32,7 @@ public class TodoService extends Service {
 
 
     }
+
     @Override
     public IBinder onBind(Intent intent) {
 
@@ -65,8 +70,8 @@ public class TodoService extends Service {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Todo.TodoService_ACTION);
         registerReceiver(myServiceReceiver, filter);
-    }
 
+    }
 
 
     @Override
@@ -82,12 +87,14 @@ public class TodoService extends Service {
        // return super.onStartCommand(intent,flags,startId);
     }
 
+
+
     @Override
     public void onDestroy() {
         if(myServiceReceiver!=null) {
             unregisterReceiver(myServiceReceiver);
         }
-
         super.onDestroy();
     }
+
 }

@@ -42,6 +42,7 @@ public class Todo extends Activity {
     private Notification notification;
     // 声明NotificationManager
     private NotificationManager mNotification;
+
     // Notification标示ID
     private static final int ID = 1;
     public static final String TODO_ACTION = "org.lirui.firstandroidapp.TODO_ACTION";
@@ -63,6 +64,7 @@ public class Todo extends Activity {
         IntentFilter filter = new IntentFilter();
         filter.addAction(TODO_ACTION);
         registerReceiver(myReceiver, filter);
+
     }
     class MyReceiver extends BroadcastReceiver{
         @Override

@@ -103,7 +103,12 @@
         <receiver android:name=".TestReceiver">
 
         </receiver>
-       <!-- <receiver android:name=".TodoReceiver">
+        <receiver android:name=".AlarmReceiver">
+            <intent-filter>
+                <action android:name="org.lirui.firstandroidapp.AlarmReceiver"/>
+            </intent-filter>
+        </receiver>
+      <!--  <receiver android:name=".TodoReceiver">
             <intent-filter>
             <action android:name="org.lirui.firstandroidapp.TodoReceiver"/>
             </intent-filter>

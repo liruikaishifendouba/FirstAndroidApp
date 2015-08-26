@@ -1,11 +1,18 @@
 
 package org.lirui.firstandroidapp;
         import android.app.Activity;
+        import android.app.AlarmManager;
         import android.app.DatePickerDialog;
         import android.app.Dialog;
+        import android.app.Notification;
+        import android.app.NotificationManager;
+        import android.app.PendingIntent;
         import android.app.TimePickerDialog;
+        import android.content.BroadcastReceiver;
+        import android.content.Context;
         import android.content.DialogInterface;
         import android.content.Intent;
+        import android.content.IntentFilter;
         import android.os.Bundle;
         import android.view.View;
         import android.widget.Button;
@@ -58,7 +65,7 @@ public class TodoEditActivity extends Activity {
         et1.setText(schedule.content);
         calendar.setTimeInMillis(schedule.time);
         String time_result =(calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH )+ 1) + "-" + calendar.get(Calendar.DAY_OF_MONTH) + " "+calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE));
-        textView.setText("您设置的时间为:"+time_result);
+        textView.setText("您设置的时间为:" + time_result);
         if(schedule.is_done==1){
             finish.setChecked(true);
         }else {
@@ -69,6 +76,7 @@ public class TodoEditActivity extends Activity {
         back.setOnClickListener(new backListener());
         finish.setOnCheckedChangeListener(new finishListener(schedule));
         button.setOnClickListener(new buttonListener());
+
     }
 
     class buttonListener implements View.OnClickListener{
@@ -101,12 +109,19 @@ public class TodoEditActivity extends Activity {
                             // TODO Auto-generated method stub
                             System.out.println("--------------------回调onTimeSet----------");
                             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                            calendar.set(Calendar.MINUTE,minute);
+                            calendar.set(Calendar.MINUTE, minute);
                             textView.setText("您设置的时间为:" + string + hourOfDay + ":" + minute);
                             schedule.time = calendar.getTimeInMillis();
+                            Intent intent = new Intent();
+                            intent.setAction("org.lirui.firstandroidapp.AlarmReceiver");
+                            PendingIntent pi = PendingIntent.getBroadcast(TodoEditActivity.this, 0, intent, 0);
+//设置一个PendingIntent对象，发送广播
+                            AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+//获取AlarmManager对象
+                            am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
                         }
-                    }, calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE), true);
-                    System.out.println("-------------这个是calendar------------"+calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DAY_OF_MONTH));
+                    }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
+                    System.out.println("-------------这个是calendar------------" + calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DAY_OF_MONTH));
                     timeDialog.setTitle("请选择时间");
                     timeDialog.show();
 
@@ -167,6 +182,17 @@ public class TodoEditActivity extends Activity {
         public void onClick(View v) {
             finish();
         }
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        System.out.println("-----------------进行了stop---------");
+    }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        System.out.println("------------------进行了destroy--------");
     }
 
 }
